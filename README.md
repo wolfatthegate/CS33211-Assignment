@@ -1,15 +1,17 @@
 # CS33211-Assignment
 Producer-Consumer Problem is a classical synchronization problem where the producer produces items and place them in the buffer - the consumer consumes the items from the buffer. In this assignment, the producer and the consumer run under two seperate processes while sharing the stack pointer, semaphore and mutex. 
 
-This project contains three files. 
+This project contains four files. 
 1) producer.c 
 2) consumer.c 
 3) protocol.h 
+4) cleanup.c
 
 To compile and run the program use the following commands. 
 ```
 $ gcc producer.c -pthread -lrt -o producer
 $ gcc consumer.c -pthread -lrt -o consumer
+$ gcc cleanup.c -pthread -lrt -o cleanup
 $ ./producer & ./consumer &
 ```
 
@@ -24,6 +26,10 @@ Consumer consumes item 2
 Producer produces item 2
 Consumer consumes item 2
 Consumer consumes item 1
+```
+If the program crashes in the middle of the process and does not have a chance to clean up the shared memory space, run 
+``` 
+$ ./cleanup
 ```
 
 Note: The program does not run on macOS. It only runs on Linux server or Virtual box. 
@@ -43,7 +49,7 @@ struct ShmData {
 The usage of shared memory data, `ShmData`, is discussed in `producer()` and `consumer()`. 
 
 
-`main()` method
+#### `main()` method
 
 `shm_open()` is used to create shared memory as followed. 
 ```
@@ -58,7 +64,7 @@ struct ShmData *shmData = mmap(0, sizeof(*shmData), PROT_READ | PROT_WRITE, MAP_
 ```
 As default, the number of threads is set to 1,which can be modified in `protocol.h`, `THREAD_NUM`. The buffer size is set to 2, meaning that there are two slots for items. At the end of the program, semaphores and mutex are destory, shared memory data are unmapped and shared memory is unlinked. 
 
-`void* producer(struct ShmData *shmData);` and `void* consumer(struct ShmData *shmData);`
+#### `void* producer(struct ShmData *shmData);` and `void* consumer(struct ShmData *shmData);`
 
 The iterations are limited to a certain number for a demonstration purpose. One can modify the iteration `ITR` in `protocol.h`. 
 
