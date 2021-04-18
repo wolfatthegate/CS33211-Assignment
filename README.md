@@ -7,14 +7,17 @@ $ gcc producer.c -pthread -lrt -o producer
 $ gcc consumer.c -pthread -lrt -o consumer
 $ ./producer & ./consumer &
 ```
-Description: 
+
+Note: The program does not run on macOS. It only runs on Linux server or Virtual box. 
+
+Descriptions: 
 
 This project contains three files. 
 1) producer.c 
-2) consumer.c - The process for consumer
-3) protocol.h - The header file for shared variables and required libraries. 
+2) consumer.c 
+3) protocol.h 
 
-`protocol.h` has the global variables for both `producer.c` and `consumer.c`. The number of threads or the buffer size can be adjusted in `protocol.h`. It has a data structure, `struct ShmData` which both `producer.c` and `consumer.c` share. 
+`protocol.h` has the global variables for both `producer.c` and `consumer.c`. The number of threads, the buffer size and iterations can be adjusted in `protocol.h`. It has a data structure, `struct ShmData` which both `producer.c` and `consumer.c` share. 
 
 ```
 struct ShmData {
@@ -32,12 +35,16 @@ Two semaphores, `sem_t semEmpty` and `sem_t semFull` are used so that the produc
 `pthread_mutex_t mutexBuffer` is used to make sure that only one thread is accessing `int x` at a time. 
 
 
-In `producer.c`, `shm_open()` is used to create shared memory. 
+`producer.c` has `void* producer(struct ShmData *shmData);` method. While producer is producing an item, mutex locks down the `int x`, incremented and then mutex unlocks. `consumer.c` works in a similar manner. 
+
+`shm_open()` is used to create shared memory as followed. 
 ```
 int fd = shm_open(NAME, O_CREAT | O_EXCL | O_RDWR, 0600); 
 ```
 
-then `struct ShmData *shmData` is declared in shared memory. 
+`consumer.c` also has to call `shm_open()` to access the share memory without passing `O_CREAT`, meaning that it is accessing the shared memory that `producer.c` created; it does not have to reserve share memory. 
+
+`struct ShmData *shmData` is mapped in the shared memory. 
 ```
 struct ShmData *shmData = mmap(0, sizeof(*shmData), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); 
 
