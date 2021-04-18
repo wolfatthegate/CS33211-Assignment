@@ -59,6 +59,7 @@ struct ShmData *shmData = mmap(0, sizeof(*shmData), PROT_READ | PROT_WRITE, MAP_
 As default, the number of threads is set to 1,which can be modified in `protocol.h`, `THREAD_NUM`. The buffer size is set to 2, meaning that there are two slots for items. At the end of the program, semaphores and mutex are destory, shared memory data are unmapped and shared memory is unlinked. 
 
 `void* producer(struct ShmData *shmData);` and `void* consumer(struct ShmData *shmData);`
+
 The iterations are limited to a certain number for a demonstration purpose. One can modify the iteration `ITR` in `protocol.h`. 
 
 `shmData->x` is used as a stack pointer or the ID of the last item in the stack. For simplicity of the problem, we do not have an actual stack in our programs. 
