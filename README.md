@@ -1,4 +1,7 @@
 # CS33211-Assignment
+
+Author - Waylon Luo (Kent State University)
+
 Producer-Consumer Problem is a classical synchronization problem where the producer produces items and place them in the buffer - the consumer consumes the items from the buffer. In this assignment, the producer and the consumer run under two seperate processes while sharing the stack pointer, semaphore and mutex. 
 
 This project contains four files. 
